@@ -28,11 +28,11 @@ const BaseInput = styled.input`
 
   &:focus {
     box-shadow: none;
-    border-bottom: 2px solid ${(props) => props.theme["green-500"]};
+    border-bottom: 2px solid ${(props) => props.theme["yellow-500"]};
   }
 
   &::placeholder {
-    color: ${(props) => props.theme["gray-500"]};
+    color: ${(props) => props.theme["yellow-500"]};
   }
 
 `;

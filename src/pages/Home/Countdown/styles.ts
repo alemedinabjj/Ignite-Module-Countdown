@@ -18,7 +18,7 @@ export const CountdownContainer = styled.div`
 
 export const Separador = styled.div`
   padding: 2rem 0;
-  color: ${(props) => props.theme["green-500"]};
+  color: ${(props) => props.theme["yellow-500"]};
 
   width: 4rem;
   overflow: hidden;
