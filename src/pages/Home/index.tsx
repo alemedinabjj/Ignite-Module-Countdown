@@ -24,48 +24,21 @@ export const Home = () => {
   const {
     activeCountdown,
     isCountdownActive,
-    setIsCountdownActive,
-    amountSecondsPassed,
-    setAmountSecondsPassed,
-    setCycles,
-    cycles,
+    handleCreateNewCycle,
+    handleInteruptCycle,
   } = useCycles();
 
   const newCycleForm = useForm<NewCycleFormData>({});
 
   const { handleSubmit, watch, reset } = newCycleForm;
 
-  function handleCreateNewCycle(data: NewCycleFormData) {
-    const newCycle: Cycle = {
-      id: new Date().getTime().toString(),
-      task: data.task,
-      minutesAmount: data.minutesAmount,
-      startDate: new Date(),
-    };
-
-    setCycles((oldCycles) => [...oldCycles, newCycle]);
-    setIsCountdownActive(newCycle.id);
-
-    setAmountSecondsPassed(0);
+  function createNewCycle(data: NewCycleFormData) {
+    handleCreateNewCycle(data);
     reset();
   }
 
-  function handleInteruptCycle() {
-    setAmountSecondsPassed(0);
-
-    const updatedCycles = cycles.map((cycle) => {
-      if (cycle.id === activeCountdown?.id) {
-        return {
-          ...cycle,
-          interruptedDate: new Date(),
-        };
-      }
-
-      return cycle;
-    });
-
-    setCycles(updatedCycles);
-    setIsCountdownActive(null);
+  function interruptCycle() {
+    handleInteruptCycle();
     reset();
   }
 
@@ -76,14 +49,14 @@ export const Home = () => {
 
   return (
     <S.HomeContainer>
-      <form onSubmit={handleSubmit(handleCreateNewCycle)}>
+      <form onSubmit={handleSubmit(createNewCycle)}>
         <FormProvider {...newCycleForm}>
           <NewCycleForm />
         </FormProvider>
         <Countdown />
 
         {isCountdownActive ? (
-          <S.StopCountdownButton type="button" onClick={handleInteruptCycle}>
+          <S.StopCountdownButton type="button" onClick={interruptCycle}>
             <HandPalm size={24} />
             Interromper
           </S.StopCountdownButton>

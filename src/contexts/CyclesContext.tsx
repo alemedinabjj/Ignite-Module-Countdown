@@ -9,6 +9,11 @@ interface Cycle {
   finishedDate?: Date;
 }
 
+interface NewCycleFormData {
+  task: string;
+  minutesAmount: number;
+}
+
 interface CyclesContextData {
   activeCountdown: Cycle | undefined;
   cycles: Cycle[];
@@ -18,18 +23,21 @@ interface CyclesContextData {
   amountSecondsPassed: number;
   setAmountSecondsPassed: React.Dispatch<React.SetStateAction<number>>;
   totalSeconds: number;
-  setCycles: React.Dispatch<React.SetStateAction<Cycle[]>>;
+  handleCreateNewCycle: (data: NewCycleFormData) => void;
+  handleInteruptCycle: () => void;
 }
 
 export const CyclesContext = createContext({} as CyclesContextData);
 
-export const CycleProvider = ({ children }: any) => {
+interface CyclesProviderProps {
+  children: React.ReactNode;
+}
+
+export const CycleProvider = ({ children }: CyclesProviderProps) => {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [isCountdownActive, setIsCountdownActive] = useState<string | null>(
     null
   );
-
-  console.log(cycles);
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
@@ -54,18 +62,51 @@ export const CycleProvider = ({ children }: any) => {
     setCycles(updatedCycles);
   }
 
+  function handleCreateNewCycle(data: NewCycleFormData) {
+    const newCycle: Cycle = {
+      id: new Date().getTime().toString(),
+      task: data.task,
+      minutesAmount: data.minutesAmount,
+      startDate: new Date(),
+    };
+
+    setCycles((oldCycles) => [...oldCycles, newCycle]);
+    setIsCountdownActive(newCycle.id);
+
+    setAmountSecondsPassed(0);
+  }
+
+  function handleInteruptCycle() {
+    setAmountSecondsPassed(0);
+
+    const updatedCycles = cycles.map((cycle) => {
+      if (cycle.id === activeCountdown?.id) {
+        return {
+          ...cycle,
+          interruptedDate: new Date(),
+        };
+      }
+
+      return cycle;
+    });
+
+    setCycles(updatedCycles);
+    setIsCountdownActive(null);
+  }
+
   return (
     <CyclesContext.Provider
       value={{
         activeCountdown,
         cycles,
-        setCycles,
         markCycleAsFinished,
         isCountdownActive,
         setIsCountdownActive,
         amountSecondsPassed,
         setAmountSecondsPassed,
         totalSeconds,
+        handleCreateNewCycle,
+        handleInteruptCycle,
       }}
     >
       {children}
