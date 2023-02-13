@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useReducer, useState } from "react";
 
 interface Cycle {
   id: string;
@@ -19,7 +19,7 @@ interface CyclesContextData {
   cycles: Cycle[];
   markCycleAsFinished: () => void;
   isCountdownActive: string | null;
-  setIsCountdownActive: React.Dispatch<React.SetStateAction<string | null>>;
+  // setIsCountdownActive: React.Dispatch<React.SetStateAction<string | null>>;
   amountSecondsPassed: number;
   setAmountSecondsPassed: React.Dispatch<React.SetStateAction<number>>;
   totalSeconds: number;
@@ -33,11 +33,62 @@ interface CyclesProviderProps {
   children: React.ReactNode;
 }
 
+interface CyclesState {
+  cycles: Cycle[];
+  isCountdownActive: string | null;
+}
+
 export const CycleProvider = ({ children }: CyclesProviderProps) => {
-  const [cycles, setCycles] = useState<Cycle[]>([]);
-  const [isCountdownActive, setIsCountdownActive] = useState<string | null>(
-    null
+  const [cyclesState, dispatch] = useReducer(
+    (state: CyclesState, action: any) => {
+      switch (action.type) {
+        case "ADD_NEW_CYCLE":
+          return {
+            ...state,
+            cycles: [...state.cycles, action.payload],
+            isCountdownActive: action.payload.id,
+          };
+        case "INTERUPT_CURRENT_CYCLE":
+          return {
+            ...state,
+            cycles: state.cycles.map((cycle) => {
+              if (cycle.id === action.isCountdownActive) {
+                return {
+                  ...cycle,
+                  interruptedDate: new Date(),
+                };
+              }
+
+              return cycle;
+            }),
+            isCountdownActive: null,
+          };
+        case "MARK_CURRENT_CYCLE_AS_FINISHED":
+          return {
+            ...state,
+            cycles: state.cycles.map((cycle) => {
+              if (cycle.id === action.payload) {
+                return {
+                  ...cycle,
+                  finishedDate: new Date(),
+                };
+              }
+
+              return cycle;
+            }),
+            isCountdownActive: null,
+          };
+        default:
+          return state;
+      }
+    },
+    {
+      cycles: [],
+      isCountdownActive: null,
+    }
   );
+
+  const { cycles, isCountdownActive } = cyclesState;
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
@@ -48,18 +99,10 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
   const totalSeconds = activeCountdown ? activeCountdown.minutesAmount * 60 : 0;
 
   function markCycleAsFinished() {
-    const updatedCycles = cycles.map((cycle) => {
-      if (cycle.id === activeCountdown?.id) {
-        return {
-          ...cycle,
-          finishedDate: new Date(),
-        };
-      }
-
-      return cycle;
+    dispatch({
+      type: "MARK_CURRENT_CYCLE_AS_FINISHED",
+      payload: activeCountdown?.id,
     });
-
-    setCycles(updatedCycles);
   }
 
   function handleCreateNewCycle(data: NewCycleFormData) {
@@ -70,28 +113,14 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
       startDate: new Date(),
     };
 
-    setCycles((oldCycles) => [...oldCycles, newCycle]);
-    setIsCountdownActive(newCycle.id);
+    dispatch({ type: "ADD_NEW_CYCLE", payload: newCycle });
 
     setAmountSecondsPassed(0);
   }
 
   function handleInteruptCycle() {
     setAmountSecondsPassed(0);
-
-    const updatedCycles = cycles.map((cycle) => {
-      if (cycle.id === activeCountdown?.id) {
-        return {
-          ...cycle,
-          interruptedDate: new Date(),
-        };
-      }
-
-      return cycle;
-    });
-
-    setCycles(updatedCycles);
-    setIsCountdownActive(null);
+    dispatch({ type: "INTERUPT_CURRENT_CYCLE", isCountdownActive });
   }
 
   return (
@@ -101,7 +130,7 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
         cycles,
         markCycleAsFinished,
         isCountdownActive,
-        setIsCountdownActive,
+        // setIsCountdownActive,
         amountSecondsPassed,
         setAmountSecondsPassed,
         totalSeconds,
