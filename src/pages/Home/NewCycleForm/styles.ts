@@ -47,5 +47,26 @@ export const TaskInput = styled(BaseInput)`
 
 export const MinutesAmountInput = styled(BaseInput)`
   width: 4rem;
+  text-align: center;
+  position: relative;
+
+
+  //estilizar o botao de mais e menos
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  
 `;
+
 

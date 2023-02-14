@@ -14,7 +14,7 @@ export const NewCycleForm = () => {
       <S.TaskInput
         id="task"
         list="task-suggestions"
-        placeholder="Dê um nome para oseu projeto"
+        placeholder="Dê um nome para o seu projeto"
         disabled={!!isCountdownActive}
         {...register("task")}
       />
