@@ -1,3 +1,4 @@
+import { differenceInSeconds } from "date-fns";
 import {
   createContext,
   useContext,
@@ -33,25 +34,41 @@ interface CyclesProviderProps {
 }
 
 export const CycleProvider = ({ children }: CyclesProviderProps) => {
-  const [cyclesState, dispatch] = useReducer(cyclesReducer, {
-    cycles: [],
-    isCountdownActive: null,
-  });
+  const [cyclesState, dispatch] = useReducer(
+    cyclesReducer,
+    {
+      cycles: [],
+      isCountdownActive: null,
+    },
+    () => {
+      const storedStateAsJSON = localStorage.getItem(
+        "@monkey-timer:cycles-state-1.0.0"
+      );
 
+      if (storedStateAsJSON) {
+        return JSON.parse(storedStateAsJSON);
+      }
+    }
+  );
   const { cycles, isCountdownActive } = cyclesState;
-
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
-
   const activeCountdown = cycles.find(
     (cycle) => cycle.id === isCountdownActive
   );
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(() => {
+    if (activeCountdown) {
+      return differenceInSeconds(
+        new Date(),
+        new Date(activeCountdown.startDate)
+      );
+    }
+
+    return 0;
+  });
 
   useEffect(() => {
-    const cyclesParsed = JSON.stringify(cyclesState);
+    const stateJSON = JSON.stringify(cyclesState);
 
-    if (cyclesParsed) {
-      localStorage.setItem("@monkey: cycles", cyclesParsed);
-    }
+    localStorage.setItem("@monkey-timer:cycles-state-1.0.0", stateJSON);
   }, [cyclesState]);
 
   const totalSeconds = activeCountdown ? activeCountdown.minutesAmount * 60 : 0;
