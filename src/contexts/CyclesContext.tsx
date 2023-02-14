@@ -1,4 +1,11 @@
-import { createContext, useContext, useReducer, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
+import { ActionTypes } from "../reducers/cycles/actions";
 import { Cycle, cyclesReducer } from "../reducers/cycles/reducer";
 
 interface NewCycleFormData {
@@ -39,11 +46,19 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
     (cycle) => cycle.id === isCountdownActive
   );
 
+  useEffect(() => {
+    const cyclesParsed = JSON.stringify(cyclesState);
+
+    if (cyclesParsed) {
+      localStorage.setItem("@monkey: cycles", cyclesParsed);
+    }
+  }, [cyclesState]);
+
   const totalSeconds = activeCountdown ? activeCountdown.minutesAmount * 60 : 0;
 
   function markCycleAsFinished() {
     dispatch({
-      type: "MARK_CURRENT_CYCLE_AS_FINISHED",
+      type: ActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED,
       payload: activeCountdown?.id,
     });
   }
@@ -56,14 +71,14 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
       startDate: new Date(),
     };
 
-    dispatch({ type: "ADD_NEW_CYCLE", payload: newCycle });
+    dispatch({ type: ActionTypes.ADD_NEW_CYCLE, payload: newCycle });
 
     setAmountSecondsPassed(0);
   }
 
   function handleInteruptCycle() {
     setAmountSecondsPassed(0);
-    dispatch({ type: "INTERUPT_CURRENT_CYCLE", isCountdownActive });
+    dispatch({ type: ActionTypes.INTERUPT_CURRENT_CYCLE, isCountdownActive });
   }
 
   return (
