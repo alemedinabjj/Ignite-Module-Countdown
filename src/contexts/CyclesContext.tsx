@@ -1,13 +1,5 @@
 import { createContext, useContext, useReducer, useState } from "react";
-
-interface Cycle {
-  id: string;
-  task: string;
-  minutesAmount: number;
-  startDate: Date;
-  interruptedDate?: Date;
-  finishedDate?: Date;
-}
+import { Cycle, cyclesReducer } from "../reducers/cycles/reducer";
 
 interface NewCycleFormData {
   task: string;
@@ -33,60 +25,11 @@ interface CyclesProviderProps {
   children: React.ReactNode;
 }
 
-interface CyclesState {
-  cycles: Cycle[];
-  isCountdownActive: string | null;
-}
-
 export const CycleProvider = ({ children }: CyclesProviderProps) => {
-  const [cyclesState, dispatch] = useReducer(
-    (state: CyclesState, action: any) => {
-      switch (action.type) {
-        case "ADD_NEW_CYCLE":
-          return {
-            ...state,
-            cycles: [...state.cycles, action.payload],
-            isCountdownActive: action.payload.id,
-          };
-        case "INTERUPT_CURRENT_CYCLE":
-          return {
-            ...state,
-            cycles: state.cycles.map((cycle) => {
-              if (cycle.id === action.isCountdownActive) {
-                return {
-                  ...cycle,
-                  interruptedDate: new Date(),
-                };
-              }
-
-              return cycle;
-            }),
-            isCountdownActive: null,
-          };
-        case "MARK_CURRENT_CYCLE_AS_FINISHED":
-          return {
-            ...state,
-            cycles: state.cycles.map((cycle) => {
-              if (cycle.id === action.payload) {
-                return {
-                  ...cycle,
-                  finishedDate: new Date(),
-                };
-              }
-
-              return cycle;
-            }),
-            isCountdownActive: null,
-          };
-        default:
-          return state;
-      }
-    },
-    {
-      cycles: [],
-      isCountdownActive: null,
-    }
-  );
+  const [cyclesState, dispatch] = useReducer(cyclesReducer, {
+    cycles: [],
+    isCountdownActive: null,
+  });
 
   const { cycles, isCountdownActive } = cyclesState;
 
