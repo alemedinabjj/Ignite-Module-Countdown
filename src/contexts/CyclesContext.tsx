@@ -48,6 +48,11 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
       if (storedStateAsJSON) {
         return JSON.parse(storedStateAsJSON);
       }
+
+      return {
+        cycles: [],
+        isCountdownActive: null,
+      };
     }
   );
   const { cycles, isCountdownActive } = cyclesState;
