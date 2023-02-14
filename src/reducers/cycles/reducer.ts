@@ -52,6 +52,13 @@ export function cyclesReducer(state: CyclesState, action: any){
         }),
         isCountdownActive: null,
       };
+
+      case ActionTypes.DELETE_CYCLE:
+        return {
+          ...state,
+          cycles: state.cycles.filter((cycle) => cycle.id !== action.payload),
+        };
+
     default:
       return state;
   }

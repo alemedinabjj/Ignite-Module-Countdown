@@ -25,6 +25,7 @@ interface CyclesContextData {
   totalSeconds: number;
   handleCreateNewCycle: (data: NewCycleFormData) => void;
   handleInteruptCycle: () => void;
+  handleDeleteCycle: (id: string) => void;
 }
 
 export const CyclesContext = createContext({} as CyclesContextData);
@@ -98,6 +99,10 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
     dispatch({ type: ActionTypes.INTERUPT_CURRENT_CYCLE, isCountdownActive });
   }
 
+  function handleDeleteCycle(id: string) {
+    dispatch({ type: ActionTypes.DELETE_CYCLE, payload: id });
+  }
+
   return (
     <CyclesContext.Provider
       value={{
@@ -111,6 +116,7 @@ export const CycleProvider = ({ children }: CyclesProviderProps) => {
         totalSeconds,
         handleCreateNewCycle,
         handleInteruptCycle,
+        handleDeleteCycle,
       }}
     >
       {children}

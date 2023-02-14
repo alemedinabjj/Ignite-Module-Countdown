@@ -2,9 +2,10 @@ import { useCycles } from "../../contexts/CyclesContext";
 import * as S from "./styles";
 import { formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
+import { Trash } from "phosphor-react";
 
 export const History = () => {
-  const { cycles } = useCycles();
+  const { cycles, handleDeleteCycle } = useCycles();
 
   return (
     <S.HistoryContainer>
@@ -18,6 +19,7 @@ export const History = () => {
               <th>Duração</th>
               <th>Início</th>
               <th>Status</th>
+              <th>Deletar</th>
             </tr>
           </thead>
 
@@ -40,6 +42,15 @@ export const History = () => {
                   ) : (
                     <S.Status statusColor="yellow">Em andamento</S.Status>
                   )}
+                </td>
+                <td>
+                  <Trash
+                    weight="fill"
+                    cursor={"pointer"}
+                    color={"red"}
+                    size={27}
+                    onClick={() => handleDeleteCycle(cycle.id)}
+                  />
                 </td>
               </tr>
             ))}

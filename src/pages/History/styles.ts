@@ -46,6 +46,7 @@ export const HistoryList = styled.div`
       &:last-child {
         border-top-right-radius: 8px;
         padding-right: 1.5rem;
+        text-align: center;
       }
 
     }
@@ -61,12 +62,13 @@ export const HistoryList = styled.div`
 
 
       &:first-child {
-        width: 50%;
+        width: 45%;
         padding-left: 1.5rem;
       }
 
       &:last-child {
         padding-right: 1.5rem;
+        text-align: center;
       }
     }
   }
