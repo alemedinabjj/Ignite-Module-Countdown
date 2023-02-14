@@ -19,7 +19,6 @@ interface CyclesContextData {
   cycles: Cycle[];
   markCycleAsFinished: () => void;
   isCountdownActive: string | null;
-  // setIsCountdownActive: React.Dispatch<React.SetStateAction<string | null>>;
   amountSecondsPassed: number;
   setAmountSecondsPassed: React.Dispatch<React.SetStateAction<number>>;
   totalSeconds: number;
