@@ -49,6 +49,12 @@ export const HistoryList = styled.div`
         text-align: center;
       }
 
+      div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
     }
 
     td {

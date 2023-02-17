@@ -3,9 +3,19 @@ import * as S from "./styles";
 import { formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import { Trash } from "phosphor-react";
+import useDataOrderBy from "../../hooks/useDataOderBy";
+import { Cycle } from "../../reducers/cycles/reducer";
+import { ArrowUp, ArrowDown } from "phosphor-react";
 
 export const History = () => {
   const { cycles, handleDeleteCycle } = useCycles();
+
+  const {
+    data: sortedData,
+    handleSort,
+    sortColumn,
+    sortDirection,
+  } = useDataOrderBy(cycles);
 
   return (
     <S.HistoryContainer>
@@ -15,16 +25,46 @@ export const History = () => {
         <table>
           <thead>
             <tr>
-              <th>Tarefa</th>
-              <th>Duração</th>
-              <th>Início</th>
+              <th onClick={() => handleSort("task")}>
+                <div>
+                  {" "}
+                  Tarefa
+                  {sortColumn === "id" && sortDirection === 1 ? (
+                    <ArrowUp size={20} />
+                  ) : (
+                    <ArrowDown size={20} />
+                  )}
+                </div>
+              </th>
+              <th onClick={() => handleSort("minutesAmount")}>
+                <div>
+                  {" "}
+                  Duração
+                  {sortColumn === "minutesAmount" && sortDirection === 1 ? (
+                    <ArrowUp size={20} />
+                  ) : (
+                    <ArrowDown size={20} />
+                  )}
+                </div>
+              </th>
+              <th onClick={() => handleSort("startDate")}>
+                <div>
+                  {" "}
+                  Início
+                  {sortColumn === "startDate" && sortDirection === 1 ? (
+                    <ArrowUp size={20} />
+                  ) : (
+                    <ArrowDown size={20} />
+                  )}
+                </div>
+              </th>
               <th>Status</th>
               <th>Deletar</th>
             </tr>
           </thead>
 
           <tbody>
-            {cycles.map((cycle) => (
+            {sortedData.map((cycle: any) => (
               <tr key={cycle.id}>
                 <td>{cycle.task}</td>
                 <td>{cycle.minutesAmount} minutos</td>
